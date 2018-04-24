@@ -74,13 +74,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 for(int i=0; i<categoriasJson.length(); i++){
                                     try {
                                         categoriaJson = categoriasJson.getJSONObject(i);
-                                        Log.d("debugapp", categoriaJson.getString("nombre"));
+                                        c = new Categoria(i, categoriaJson.getString("nombre").toString(), "", "");
+                                        categorias.add(c);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
-
-                                    c = new Categoria(1, "itan", "", "");
-                                    categorias.add(c);
                                 }
 
                                 adapter = new CategoriasAdapter(MainActivity.this, categorias);
