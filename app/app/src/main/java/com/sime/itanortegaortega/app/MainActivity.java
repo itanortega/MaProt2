@@ -1,22 +1,35 @@
 package com.sime.itanortegaortega.app;
 
+import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+    private GridView gridView;
+    private CategoriasAdapter adapter;
+    private GridView Gv_Categorias;
 
 
     ArrayList<Categoria> categorias = new ArrayList<Categoria>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
+        Gv_Categorias.setOnItemClickListener(this);
+
 
         cargarCategorias();
     }
@@ -24,20 +37,28 @@ public class MainActivity extends AppCompatActivity {
     private void cargarCategorias() {
 
 
-        categorias.add(new Categoria("Animals", "animales", "Local"));
-        categorias.add(new Categoria("Family", "familia", "Local"));
-        categorias.add(new Categoria("Clothes", "ropa", "Local"));
-        categorias.add(new Categoria("Profesions", "profesiones", "Local"));
-        categorias.add(new Categoria("The Office", "oficina", "Local"));
-        categorias.add(new Categoria("The Body", "cuerpo", "Local"));
-        categorias.add(new Categoria("The city", "ciudad", "Local"));
-        categorias.add(new Categoria("Foods", "alimentos", "Local"));
-        categorias.add(new Categoria("Colors", "colores", "Local"));
-        categorias.add(new Categoria("Deports", "deportes", "Local"));
+        categorias.add(new Categoria(1,"Animals", "animales", "Local"));
+        categorias.add(new Categoria(2, "Family", "familia", "Local"));
+        categorias.add(new Categoria(3, "Clothes", "ropa", "Local"));
+        categorias.add(new Categoria(4, "Profesions", "profesiones", "Local"));
+        categorias.add(new Categoria(5, "The Office", "oficina", "Local"));
+        categorias.add(new Categoria(6, "The Body", "cuerpo", "Local"));
+        categorias.add(new Categoria(7, "The city", "ciudad", "Local"));
+        categorias.add(new Categoria(8, "Foods", "alimentos", "Local"));
+        categorias.add(new Categoria(9, "Colors", "colores", "Local"));
+        categorias.add(new Categoria(10, "Deports", "deportes", "Local"));
 
-        CategoriasAdapter adapter = new CategoriasAdapter(this, categorias);
-        GridView Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
+        adapter = new CategoriasAdapter(this, categorias);
 
         Gv_Categorias.setAdapter(adapter);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Categoria item = (Categoria) parent.getItemAtPosition(position);
+
+        Intent intent = new Intent(this, PalabrasActivity.class);
+        intent.putExtra("nombre_categoria", item.getNombre());
+        startActivity(intent);
     }
 }

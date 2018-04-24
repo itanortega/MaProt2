@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 /**
@@ -52,6 +54,10 @@ public class CategoriasAdapter extends BaseAdapter {
         TextView Txt_estado = (TextView) convertView.findViewById(R.id.Txt_estado);
 
         final Categoria item = getItem(position);
+        Cv_Categoria.setText(item.getNombre());
+        Glide.with(Cv_Imagen_categoria.getContext())
+                .load(R.drawable.alimientos)
+                .into(Cv_Imagen_categoria);
         Cv_Categoria.setText(item.getNombre());
 
         return convertView;

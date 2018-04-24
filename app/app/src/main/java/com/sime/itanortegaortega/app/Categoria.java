@@ -18,7 +18,8 @@ public class Categoria {
 
     }
 
-    public Categoria(String nombre, String imagen, String estado) {
+    public Categoria(int id, String nombre, String imagen, String estado) {
+        this.id = id;
         this.nombre = nombre;
         this.imagen = imagen;
         this.estado = estado;
