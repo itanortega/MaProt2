@@ -1,0 +1,11 @@
+{
+	"animals": [{
+		"nombre": "Cat",
+		"imagen": "cat",
+		"progreso": 0
+	}, {
+		"nombre": "Dog",
+		"imagen": "dog",
+		"progreso": 0
+	}]
+}

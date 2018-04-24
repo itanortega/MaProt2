@@ -1,0 +1,44 @@
+{
+
+	"categorias": [{
+		"nombre": "Animals",
+		"imagen": "animales",
+		"progreso": 0
+	}, {
+		"nombre": "Colors",
+		"imagen": "Colores",
+		"progreso": 0
+	}, {
+		"nombre": "Family",
+		"imagen": "familia",
+		"progreso": 0
+	}, {
+		"nombre": "Clothes",
+		"imagen": "ropa",
+		"progreso": 0
+	}, {
+		"nombre": "Profesions",
+		"imagen": "profesiones",
+		"progreso": 0
+	}, {
+		"nombre": "Office",
+		"imagen": "oficina",
+		"progreso": 0
+	}, {
+		"nombre": "Body",
+		"imagen": "cuerpo",
+		"progreso": 0
+	}, {
+		"nombre": "City",
+		"imagen": "Ciudad",
+		"progreso": 0
+	}, {
+		"nombre": "Foods",
+		"imagen": "alimentos",
+		"progreso": 0
+	}, {
+		"nombre": "Deports",
+		"imagen": "deportes",
+		"progreso": 0
+	}]
+}
