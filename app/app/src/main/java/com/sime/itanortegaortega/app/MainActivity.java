@@ -40,16 +40,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void cargarCategorias() {
-        JSONArray categoriasJsondos;
-
-        JSONArray categoriasJson;
-
         Runnable thread = new Runnable() {
             @Override
             public void run() {
                 String strUrl = DOMAIN + "categorias.json";
                 URL url = null;
                 CAFData remoteData = null;
+
 
 
                 try {
@@ -63,7 +60,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                     try {
                         JSONObject root = new JSONObject(remoteData.toText());
-                        categoriasJson = root.getJSONArray("Categorias");
+                        JSONArray catJson = root.getJSONArray("Categorias");
+
+                        final JSONArray categoriasJson = catJson;
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ArrayList<Categoria> categorias = new ArrayList<>();
+                                Categoria c;
+                                JSONObject categoriaJson;
+
+                                for(int i=0; i<categoriasJson.length(); i++){
+                                    try {
+                                        categoriaJson = categoriasJson.getJSONObject(i);
+                                        Log.d("debugapp", categoriaJson.getString("nombre"));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    c = new Categoria(1, "itan", "", "");
+                                    categorias.add(c);
+                                }
+
+                                adapter = new CategoriasAdapter(MainActivity.this, categorias);
+                                Gv_Categorias.setAdapter(adapter);
+                            }
+                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -71,24 +94,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         };
 
-        categoriasJsondos = categoriasJson;
-
         queue.execute(thread);
-
-        /*categorias.add(new Categoria(1,"Animals", "animales", "Local"));
-        categorias.add(new Categoria(2, "Family", "familia", "Local"));
-        categorias.add(new Categoria(3, "Clothes", "ropa", "Local"));
-        categorias.add(new Categoria(4, "Profesions", "profesiones", "Local"));
-        categorias.add(new Categoria(5, "The Office", "oficina", "Local"));
-        categorias.add(new Categoria(6, "The Body", "cuerpo", "Local"));
-        categorias.add(new Categoria(7, "The city", "ciudad", "Local"));
-        categorias.add(new Categoria(8, "Foods", "alimentos", "Local"));
-        categorias.add(new Categoria(9, "Colors", "colores", "Local"));
-        categorias.add(new Categoria(10, "Deports", "deportes", "Local"));
-
-        adapter = new CategoriasAdapter(this, categorias);
-
-        Gv_Categorias.setAdapter(adapter);*/
     }
 
     @Override

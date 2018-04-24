@@ -14,10 +14,6 @@ public class Categoria {
     private String estado;
     private Activity act = new Activity();
 
-    public Categoria(){
-
-    }
-
     public Categoria(int id, String nombre, String imagen, String estado) {
         this.id = id;
         this.nombre = nombre;
