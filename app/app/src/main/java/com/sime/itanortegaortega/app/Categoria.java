@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
  */
 
 public class Categoria {
+    private int id;
     private String nombre;
     private String imagen;
     private String estado;
@@ -60,5 +61,13 @@ public class Categoria {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -6,9 +6,16 @@
     android:layout_height="match_parent"
     tools:context="com.sime.itanortegaortega.app.MainActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_categorias"
+    <GridView
+        android:id="@+id/Gv_Categorias"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
+        android:gravity="center"
+        android:columnWidth="150dp"
+        android:numColumns="2"
+        android:verticalSpacing="14dp"
+        android:horizontalSpacing="1dp"
+        android:stretchMode="spacingWidthUniform"
+        />
 
 </android.support.constraint.ConstraintLayout>

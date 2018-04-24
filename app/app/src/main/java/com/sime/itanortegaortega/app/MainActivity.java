@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.GridView;
 
 import java.util.ArrayList;
 
@@ -34,12 +35,9 @@ public class MainActivity extends AppCompatActivity {
         categorias.add(new Categoria("Colors", "colores", "Local"));
         categorias.add(new Categoria("Deports", "deportes", "Local"));
 
-        RecyclerViewAdapterCategorias adapter = new RecyclerViewAdapterCategorias(categorias);
-        RecyclerView recyclerview_categorias =  (RecyclerView)findViewById(R.id.recyclerview_categorias);
-        recyclerview_categorias.setHasFixedSize(true);
-        recyclerview_categorias.setAdapter(adapter);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerview_categorias.setLayoutManager(llm);
+        CategoriasAdapter adapter = new CategoriasAdapter(this, categorias);
+        GridView Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
+
+        Gv_Categorias.setAdapter(adapter);
     }
 }
