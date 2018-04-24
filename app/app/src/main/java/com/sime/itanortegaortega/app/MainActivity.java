@@ -11,16 +11,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-    private GridView gridView;
+    private final static String DOMAIN = "http://181.62.161.249:41062/www/api/";
+
     private CategoriasAdapter adapter;
     private GridView Gv_Categorias;
-
-
-    ArrayList<Categoria> categorias = new ArrayList<Categoria>();
-
+    private ExecutorService queue = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +36,46 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
         Gv_Categorias.setOnItemClickListener(this);
 
-
         cargarCategorias();
     }
 
     private void cargarCategorias() {
+        JSONArray categoriasJsondos;
+
+        JSONArray categoriasJson;
+
+        Runnable thread = new Runnable() {
+            @Override
+            public void run() {
+                String strUrl = DOMAIN + "categorias.json";
+                URL url = null;
+                CAFData remoteData = null;
 
 
-        categorias.add(new Categoria(1,"Animals", "animales", "Local"));
+                try {
+                    url = new URL(strUrl);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                if(url != null){
+                    remoteData = CAFData.dataWithContentsOfURL(url);
+
+                    try {
+                        JSONObject root = new JSONObject(remoteData.toText());
+                        categoriasJson = root.getJSONArray("Categorias");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        categoriasJsondos = categoriasJson;
+
+        queue.execute(thread);
+
+        /*categorias.add(new Categoria(1,"Animals", "animales", "Local"));
         categorias.add(new Categoria(2, "Family", "familia", "Local"));
         categorias.add(new Categoria(3, "Clothes", "ropa", "Local"));
         categorias.add(new Categoria(4, "Profesions", "profesiones", "Local"));
@@ -50,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         adapter = new CategoriasAdapter(this, categorias);
 
-        Gv_Categorias.setAdapter(adapter);
+        Gv_Categorias.setAdapter(adapter);*/
     }
 
     @Override
