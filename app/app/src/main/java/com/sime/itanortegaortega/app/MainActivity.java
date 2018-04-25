@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private final static String DOMAIN = "http://181.62.161.249:41062/www/api/";
-    private static String LOCAL = "http://181.62.161.249:41062/www/api/";
+    private static String LOCAL = "";
 
     private CategoriasAdapter adapter;
     private GridView Gv_Categorias;
@@ -41,12 +41,93 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
         Gv_Categorias.setOnItemClickListener(this);
 
-        cargarCategorias();
+        if(Utilidades.existeArchivo(LOCAL + "version.json")){
+            Log.d("debugapp", "existearchivo");
+        }else{
+            Log.d("debugapp", "no existe");
+            descargarArchivosIniciales();
+        }
+    }
+
+    private void descargarArchivosIniciales() {
+        String strUrl_version = DOMAIN + "version.json";
+        String strUrl_Categorias = DOMAIN + "categorias.json";
+        String strUrl_Imagenes = DOMAIN + "img/";
+
+        String strUrl_version_l = LOCAL + "version.json";
+        String strUrl_Categorias_l = LOCAL + "categorias.json";
+        String strUrl_Imagenes_l = LOCAL + "img/";
+
+        URL url_version = null;
+        URL url_categorias = null;
+        URL url_imagenes = null;
+
+        CAFData data;
+
+        try {
+            url_version = new URL(strUrl_version);
+            url_categorias = new URL(strUrl_Categorias);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        if(url_version != null) {Log.d("debugapp", strUrl_version_l);
+            data = CAFData.dataWithContentsOfURL(url_version);
+            data.writeToFile(strUrl_version_l, true);
+        }
+
+        if(url_categorias != null) {Log.d("debugapp", strUrl_Categorias);
+            data = CAFData.dataWithContentsOfURL(url_categorias);
+            data.writeToFile(strUrl_Categorias_l, true);
+        }
+
+        data = CAFData.dataWithContentsOfFile(strUrl_Categorias_l);
+
+        try {
+            JSONObject root = new JSONObject(data.toText());
+            JSONArray catJson = root.getJSONArray("Categorias");
+            Categoria c;
+            for (int i = 0; i < catJson.length(); i++) {
+                try {
+                    JSONObject categoriaJson = catJson.getJSONObject(i);
+                    c = new Categoria(i, categoriaJson.getString("nombre").toString(), "", "");
+                    Log.d("debugapp", c.getNombre());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /*private void actualizarCategorias() {
+        final String strUrl_Remoto = DOMAIN + "categorias.json";
+
+        URL url = null;
+        try {
+            url = new URL(strUrl_Remoto);
+            continuar = true;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        if(url != null){
+            data = CAFData.dataWithContentsOfURL(url);
+            data.writeToFile(strUrl_Local,true);
+            continuar = true;
+        }
+
+    }
+
+    private boolean verificarVersion() {
+        return true;
     }
 
     private void cargarCategorias() {
         final String strUrl_Local = LOCAL + "categorias.json";
-        final String strUrl_Remoto = DOMAIN + "categorias.json";
+
 
         final Runnable thread = new Runnable() {
             @Override
@@ -58,19 +139,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     data = CAFData.dataWithContentsOfFile(strUrl_Local);
                     continuar = true;
                 }else{
-                    URL url = null;
-                    try {
-                        url = new URL(strUrl_Remoto);
-                        continuar = true;
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
 
-                    if(url != null){
-                        data = CAFData.dataWithContentsOfURL(url);
-                        data.writeToFile(strUrl_Local,true);
-                        continuar = true;
-                    }
                 }
 
                 if(continuar) {
@@ -109,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         };
 
         queue.execute(thread);
-    }
+    }*/
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
