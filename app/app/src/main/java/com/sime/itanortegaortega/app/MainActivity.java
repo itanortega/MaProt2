@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.bumptech.glide.util.Util;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +25,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     private final static String DOMAIN = "http://181.62.161.249:41062/www/api/";
+    private static String LOCAL = "http://181.62.161.249:41062/www/api/";
 
     private CategoriasAdapter adapter;
     private GridView Gv_Categorias;
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LOCAL = getApplicationContext().getFilesDir().getAbsolutePath() + "/";
+
         Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
         Gv_Categorias.setOnItemClickListener(this);
 
@@ -40,26 +45,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void cargarCategorias() {
-        Runnable thread = new Runnable() {
+        final String strUrl_Local = LOCAL + "categorias.json";
+        final String strUrl_Remoto = DOMAIN + "categorias.json";
+
+        final Runnable thread = new Runnable() {
             @Override
             public void run() {
-                String strUrl = DOMAIN + "categorias.json";
-                URL url = null;
-                CAFData remoteData = null;
+                CAFData data = null;
+                boolean continuar = false;
 
+                if(Utilidades.existeArchivo(strUrl_Local)){
+                    data = CAFData.dataWithContentsOfFile(strUrl_Local);
+                    continuar = true;
+                }else{
+                    URL url = null;
+                    try {
+                        url = new URL(strUrl_Remoto);
+                        continuar = true;
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
 
-
-                try {
-                    url = new URL(strUrl);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    if(url != null){
+                        data = CAFData.dataWithContentsOfURL(url);
+                        data.writeToFile(strUrl_Local,true);
+                        continuar = true;
+                    }
                 }
 
-                if(url != null){
-                    remoteData = CAFData.dataWithContentsOfURL(url);
-
+                if(continuar) {
                     try {
-                        JSONObject root = new JSONObject(remoteData.toText());
+                        JSONObject root = new JSONObject(data.toText());
                         JSONArray catJson = root.getJSONArray("Categorias");
 
                         final JSONArray categoriasJson = catJson;
@@ -71,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 Categoria c;
                                 JSONObject categoriaJson;
 
-                                for(int i=0; i<categoriasJson.length(); i++){
+                                for (int i = 0; i < categoriasJson.length(); i++) {
                                     try {
                                         categoriaJson = categoriasJson.getJSONObject(i);
                                         c = new Categoria(i, categoriaJson.getString("nombre").toString(), "", "");
