@@ -16,6 +16,7 @@
         android:verticalSpacing="14dp"
         android:horizontalSpacing="1dp"
         android:stretchMode="spacingWidthUniform"
-        />
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
 
 </android.support.constraint.ConstraintLayout>

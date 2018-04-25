@@ -45,7 +45,7 @@ public class Categoria {
             case "default": img = act.getResources().getDrawable(R.drawable.animales); break;
         }
         return img;*/
-        return act.getResources().getDrawable(R.drawable.animales);
+        return act.getResources().getDrawable(R.drawable.img);
     }
 
     public void setImagen(String imagen) {

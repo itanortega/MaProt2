@@ -56,7 +56,7 @@ public class CategoriasAdapter extends BaseAdapter {
         final Categoria item = getItem(position);
         Cv_Categoria.setText(item.getNombre());
         Glide.with(Cv_Imagen_categoria.getContext())
-                .load(R.drawable.alimientos)
+                .load(R.drawable.img)
                 .into(Cv_Imagen_categoria);
         Cv_Categoria.setText(item.getNombre());
 
