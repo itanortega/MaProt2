@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private CategoriasAdapter adapter;
     private GridView Gv_Categorias;
-    private ExecutorService queue = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,135 +41,51 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
         Gv_Categorias.setOnItemClickListener(this);
 
-        if(Utilidades.existeArchivo(LOCAL + "version.json")){
-            Log.d("debugapp", "existearchivo");
-        }else{
-            Log.d("debugapp", "no existe");
-            descargarArchivosIniciales();
-        }
-    }
-
-    private void descargarArchivosIniciales() {
-        String strUrl_version = DOMAIN + "version.json";
-        String strUrl_Categorias = DOMAIN + "categorias.json";
-        String strUrl_Imagenes = DOMAIN + "img/";
-
-        String strUrl_version_l = LOCAL + "version.json";
-        String strUrl_Categorias_l = LOCAL + "categorias.json";
-        String strUrl_Imagenes_l = LOCAL + "img/";
-
-        URL url_version = null;
-        URL url_categorias = null;
-        URL url_imagenes = null;
-
-        CAFData data;
-
-        try {
-            url_version = new URL(strUrl_version);
-            url_categorias = new URL(strUrl_Categorias);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        if(url_version != null) {Log.d("debugapp", strUrl_version_l);
-            data = CAFData.dataWithContentsOfURL(url_version);
-            data.writeToFile(strUrl_version_l, true);
-        }
-
-        if(url_categorias != null) {Log.d("debugapp", strUrl_Categorias);
-            data = CAFData.dataWithContentsOfURL(url_categorias);
-            data.writeToFile(strUrl_Categorias_l, true);
-        }
-
-        data = CAFData.dataWithContentsOfFile(strUrl_Categorias_l);
-
-        try {
-            JSONObject root = new JSONObject(data.toText());
-            JSONArray catJson = root.getJSONArray("Categorias");
-            Categoria c;
-            for (int i = 0; i < catJson.length(); i++) {
-                try {
-                    JSONObject categoriaJson = catJson.getJSONObject(i);
-                    c = new Categoria(i, categoriaJson.getString("nombre").toString(), "", "");
-                    Log.d("debugapp", c.getNombre());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        if(existeArchivoVersion()){
+            if(versionesDiferentes()){
+                descargarTodo();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        }else{
+            descargarTodo();
         }
+    }
+
+    private void descargarTodo() {
 
     }
 
-    /*private void actualizarCategorias() {
-        final String strUrl_Remoto = DOMAIN + "categorias.json";
+    private boolean versionesDiferentes() {
+        final String urlWeb = DOMAIN + "version.json";
+        final String urlLocal = LOCAL + "version.json";
+        boolean res = true;
+        ExecutorService queue = Executors.newSingleThreadExecutor();
 
-        URL url = null;
-        try {
-            url = new URL(strUrl_Remoto);
-            continuar = true;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        Runnable thread = new Runnable() {
+            URL urlW = null;
+            URL urlL = null;
+            boolean iguales = true;
 
-        if(url != null){
-            data = CAFData.dataWithContentsOfURL(url);
-            data.writeToFile(strUrl_Local,true);
-            continuar = true;
-        }
-
-    }
-
-    private boolean verificarVersion() {
-        return true;
-    }
-
-    private void cargarCategorias() {
-        final String strUrl_Local = LOCAL + "categorias.json";
-
-
-        final Runnable thread = new Runnable() {
             @Override
             public void run() {
-                CAFData data = null;
-                boolean continuar = false;
-
-                if(Utilidades.existeArchivo(strUrl_Local)){
-                    data = CAFData.dataWithContentsOfFile(strUrl_Local);
-                    continuar = true;
-                }else{
-
+                try {
+                    urlW = new URL(urlWeb);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
 
-                if(continuar) {
+                CAFData web;
+                CAFData local;
+
+                if(urlW != null && urlL !=null){
+                    web = CAFData.dataWithContentsOfURL(urlW);
+                    local = CAFData.dataWithContentsOfURL(urlL);
+
                     try {
-                        JSONObject root = new JSONObject(data.toText());
-                        JSONArray catJson = root.getJSONArray("Categorias");
-
-                        final JSONArray categoriasJson = catJson;
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ArrayList<Categoria> categorias = new ArrayList<>();
-                                Categoria c;
-                                JSONObject categoriaJson;
-
-                                for (int i = 0; i < categoriasJson.length(); i++) {
-                                    try {
-                                        categoriaJson = categoriasJson.getJSONObject(i);
-                                        c = new Categoria(i, categoriaJson.getString("nombre").toString(), "", "");
-                                        categorias.add(c);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                adapter = new CategoriasAdapter(MainActivity.this, categorias);
-                                Gv_Categorias.setAdapter(adapter);
-                            }
-                        });
+                        JSONObject webJson = new JSONObject(web.toText());
+                        JSONObject localJson = new JSONObject(local.toText());
+                        if(webJson.toString().equals(localJson.toString())){
+                            iguales = false;
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -178,7 +94,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         };
 
         queue.execute(thread);
-    }*/
+        res = iguales;
+        return res;
+    }
+
+    private boolean existeArchivoVersion() {
+        String urlLocal = LOCAL + "version.json";
+        File fichero = new File(urlLocal);
+
+        if (fichero.exists())
+            return true;
+        else
+            return false;
+    }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

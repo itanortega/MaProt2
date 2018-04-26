@@ -1,0 +1,16 @@
+categorias [0]
+  nombre = Animals
+  words [0]
+    inglés = Cat
+    español = Gato
+  words [1]
+    inglés = Dog
+    español = Perro
+categorias [1]
+  nombre = Family
+  words [0]
+    inglés = Brother
+    español = Hermano
+  words [1]
+    inglés = Sister
+    español = Hermana
