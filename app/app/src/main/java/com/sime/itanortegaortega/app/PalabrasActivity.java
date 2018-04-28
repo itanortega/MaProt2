@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PalabrasActivity extends AppCompatActivity {
-    private final static String DOMAIN = "http://181.62.161.249:41062/www/api/";
+    private static String LOCAL = "";
 
-    String nombre_categoria;
+    int id_categoria;
     RecyclerView Rv_Palabras;
     LinearLayoutManager linearLayoutManager;
     private PalabrasAdapter palabrasAdapter;
@@ -31,13 +31,15 @@ public class PalabrasActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_palabras);
-        nombre_categoria = getIntent().getStringExtra("nombre_categoria").toString();
+        id_categoria = (int) getIntent().getIntExtra("id_categoria", 0);
 
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
 
         Rv_Palabras = (RecyclerView) findViewById(R.id.Rv_Palabras);
         Rv_Palabras.setLayoutManager(linearLayoutManager);
+
+        LOCAL = getApplicationContext().getFilesDir().getAbsolutePath() + "/";
 
         cargarPalabras();
     }
@@ -46,52 +48,43 @@ public class PalabrasActivity extends AppCompatActivity {
         Runnable thread = new Runnable() {
             @Override
             public void run() {
-                String strUrl = DOMAIN + nombre_categoria + ".json";
+            String strUrl = LOCAL + "words.json";
+            CAFData data = null;
 
-                URL url = null;
-                CAFData remoteData = null;
+            data = CAFData.dataWithContentsOfFile(strUrl);
 
-                try {
-                    url = new URL(strUrl);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+            try {
+                JSONObject root = new JSONObject(data.toText());
+                JSONArray catJson = root.getJSONArray("categorias");
+                JSONObject categoriaJson = catJson.getJSONObject(id_categoria);
+                JSONArray palabras = categoriaJson.getJSONArray("words");
 
-                if(url != null){
-                    remoteData = CAFData.dataWithContentsOfURL(url);
+                final JSONArray palabrasJson = palabras;
 
-                    try {
-                        JSONObject root = new JSONObject(remoteData.toText());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<Palabra> palabras = new ArrayList<>();
+                        Palabra p;
+                        JSONObject palabraJson;
 
-                        JSONArray palJson = root.getJSONArray("data");
-
-                        final JSONArray palabrasJson = palJson;
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ArrayList<Palabra> palabras = new ArrayList<>();
-                                Palabra p;
-                                JSONObject palabraJson;
-
-                                for(int i=0; i<palabrasJson.length(); i++){
-                                    try {
-                                        palabraJson = palabrasJson.getJSONObject(i);
-                                        p = new Palabra(i, "", palabraJson.getString("nombre").toString());
-                                        palabras.add(p);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                palabrasAdapter = new PalabrasAdapter(palabras, getApplicationContext());
-                                Rv_Palabras.setAdapter(palabrasAdapter);
+                        for(int i=0; i<palabrasJson.length(); i++){
+                            try {
+                                palabraJson = palabrasJson.getJSONObject(i);
+                                p = new Palabra(i, "", palabraJson.getString("inglés").toString());
+                                palabras.add(p);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        }
+
+                        palabrasAdapter = new PalabrasAdapter(palabras, getApplicationContext());
+                        Rv_Palabras.setAdapter(palabrasAdapter);
                     }
-                }
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             }
         };
 

@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Categoria item = (Categoria) parent.getItemAtPosition(position);
 
         Intent intent = new Intent(this, PalabrasActivity.class);
-        intent.putExtra("nombre_categoria", item.getNombre());
+        intent.putExtra("id_categoria", item.getId());
         startActivity(intent);
     }
 }
