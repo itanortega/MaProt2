@@ -27,9 +27,9 @@ public class IndexActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_index);  Intent intent = new Intent(getBaseContext(), MainActivity.class); startActivity(intent);
+        setContentView(R.layout.activity_index);
 
-        /*Pb_Estado = (ProgressBar) findViewById(R.id.Pb_Estado);
+        Pb_Estado = (ProgressBar) findViewById(R.id.Pb_Estado);
         Txt_estado = (TextView) findViewById(R.id.Txt_estado);
         Pb_Estado.setMax(100);
 
@@ -42,7 +42,7 @@ public class IndexActivity extends AppCompatActivity {
         Txt_estado.setText("Descargando Archivos.");
 
         ExisteArchivoVersion existeArchivoVersion = new ExisteArchivoVersion();
-        existeArchivoVersion.execute();*/
+        existeArchivoVersion.execute();
     }
 
     class ExisteArchivoVersion extends AsyncTask<Void, Integer, Boolean>{
