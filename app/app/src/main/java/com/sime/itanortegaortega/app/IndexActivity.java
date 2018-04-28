@@ -34,7 +34,11 @@ public class IndexActivity extends AppCompatActivity {
         Pb_Estado.setMax(100);
 
         LOCAL = getApplicationContext().getFilesDir().getAbsolutePath() + "/";
-
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Txt_estado.setText("Descargando Archivos.");
 
         ExisteArchivoVersion existeArchivoVersion = new ExisteArchivoVersion();
@@ -171,6 +175,7 @@ public class IndexActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
+                finish();
             }else{
                 Pb_Estado.setProgress(50);
                 DescargarArchivos descargarArchivos = new DescargarArchivos();
@@ -251,6 +256,7 @@ public class IndexActivity extends AppCompatActivity {
 
             Intent intent = new Intent(getBaseContext(), MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 }
