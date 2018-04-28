@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LOCAL = getApplicationContext().getFilesDir().getAbsolutePath() + "/";
+        Log.d("debugapp", "actividad main");
+        /*LOCAL = getApplicationContext().getFilesDir().getAbsolutePath() + "/";
 
         Gv_Categorias =  (GridView)findViewById(R.id.Gv_Categorias);
         Gv_Categorias.setOnItemClickListener(this);
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             descargarTodo();
         }
         
-        cargarCategorias();
+        cargarCategorias();*/
     }
 
     private void cargarCategorias() {
