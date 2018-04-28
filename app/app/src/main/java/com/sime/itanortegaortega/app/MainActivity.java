@@ -42,22 +42,69 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Gv_Categorias.setOnItemClickListener(this);
 
         if(existeArchivoVersion()){
+            Log.d("debugapp", "existe el archivo");
             if(versionesDiferentes()){
-                descargarTodo();
+                Log.d("debugapp", "versiones diferentes del archivo");
+                //descargarTodo();
             }
         }else{
+            Log.d("debugapp", "se debe descargar todo");
             descargarTodo();
         }
+        
+        cargarCategorias();
+    }
+
+    private void cargarCategorias() {
     }
 
     private void descargarTodo() {
+        ExecutorService queue = Executors.newSingleThreadExecutor();
 
+        Runnable thread = new Runnable() {
+            URL urlV = null;
+            URL urlP = null;
+            boolean iguales = true;
+
+            @Override
+            public void run() {
+                try {
+                    urlV = new URL(DOMAIN + "version.json");
+                    urlP = new URL(DOMAIN + "words.json");
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                CAFData versionData;
+                CAFData wordsData;
+
+                if(urlV != null && urlP !=null){
+                    versionData = CAFData.dataWithContentsOfURL(urlV);
+                    wordsData = CAFData.dataWithContentsOfURL(urlP);
+
+                    try {
+                        JSONObject jsonVersion = new JSONObject(versionData.toText());
+                        JSONObject jsonWordsData = new JSONObject(wordsData.toText());
+
+                        versionData.writeToFile(LOCAL + "version.json", true);
+                        wordsData.writeToFile(LOCAL + "words.json", true);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        queue.execute(thread);
+        Log.d("debugapp", "descargar todo");
     }
 
     private boolean versionesDiferentes() {
         final String urlWeb = DOMAIN + "version.json";
         final String urlLocal = LOCAL + "version.json";
-        boolean res = true;
+        final boolean[] res = {true};
         ExecutorService queue = Executors.newSingleThreadExecutor();
 
         Runnable thread = new Runnable() {
@@ -69,10 +116,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             public void run() {
                 try {
                     urlW = new URL(urlWeb);
+                    urlL = new URL(urlLocal);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
 
+                Log.d("debugapp", String.valueOf(urlW));
+                Log.d("debugapp", String.valueOf(urlL));
                 CAFData web;
                 CAFData local;
 
@@ -83,9 +133,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     try {
                         JSONObject webJson = new JSONObject(web.toText());
                         JSONObject localJson = new JSONObject(local.toText());
+                        Log.d("debugapp", webJson.toString());
+                        Log.d("debugapp", localJson.toString());
                         if(webJson.toString().equals(localJson.toString())){
                             iguales = false;
+                            Log.d("debugapp", String.valueOf(iguales));
                         }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                res[0] = iguales;
+                            }
+                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -94,18 +154,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         };
 
         queue.execute(thread);
-        res = iguales;
-        return res;
+        return res[0];
     }
 
     private boolean existeArchivoVersion() {
-        String urlLocal = LOCAL + "version.json";
-        File fichero = new File(urlLocal);
+        final String urlLocal = LOCAL + "version.json";
+        final boolean[] res = {false};
+        ExecutorService queue = Executors.newSingleThreadExecutor();
 
-        if (fichero.exists())
-            return true;
-        else
-            return false;
+        Runnable thread = new Runnable() {
+            URL urlW = null;
+            URL urlL = null;
+            boolean existe = false;
+
+            @Override
+            public void run() {
+                try {
+                    urlL = new URL(urlLocal);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                if (urlL != null) {
+                    existe = true;
+                }
+
+                res[0] = existe;
+            }
+        };
+
+        queue.execute(thread);
+        return res[0];
     }
 
 
